@@ -1,0 +1,11 @@
+{
+  "name": "Villa Bellavista",
+  "bytes": 5914380,
+  "meshes": 20,
+  "images": 24,
+  "requiredExtensions": [
+    "KHR_draco_mesh_compression"
+  ],
+  "palette": "white and grey",
+  "source": "Original Blender model created for this project"
+}
