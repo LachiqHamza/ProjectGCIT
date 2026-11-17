@@ -1,18 +1,27 @@
 import type { Metadata, Viewport } from "next";
+import { LanguageProvider } from "@/components/language-provider";
+import { messages } from "@/lib/i18n";
+import { getLocale } from "@/lib/locale-server";
 import "./globals.css";
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = messages[locale];
+  return {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
-  title: "Project Examples — GCIT Architecture",
-  description: "Step inside Villa Bellavista. Explore a contemporary Italian villa in interactive 3D, from the pool terrace to its furnished rooms.",
+  title: t.seoTitle,
+  description: t.seoDescription,
   openGraph: {
-    title: "Villa Bellavista — Project Examples",
-    description: "A closer look at contemporary living. Explore the architecture, interiors and materials in 3D.",
+    title: t.seoTitle,
+    description: t.seoDescription,
+    locale: locale === "it" ? "it_IT" : "en_GB",
     images: [{ url: "/images/villa-hero.webp", width: 1920, height: 1280 }],
   },
-};
+  };
+}
 export const viewport: Viewport = { themeColor: "#f6f5f1" };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body>{children}</body></html>;
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await getLocale();
+  return <html lang={locale}><body><LanguageProvider initialLocale={locale}>{children}</LanguageProvider></body></html>;
 }

@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+// Retain full coverage of the English tour alongside dedicated Italian tests.
+test.beforeEach(async ({ context }) => {
+  await context.addCookies([{ name: "gcit-language", value: "en", url: "http://127.0.0.1:3000" }]);
+});
+
 test("loads on demand, renders the actual villa and navigates rooms and cutaways", async ({ page }) => {
   const errors: string[] = [];
   const failures: string[] = [];
@@ -38,8 +43,8 @@ test("loads on demand, renders the actual villa and navigates rooms and cutaways
   await page.getByRole("button", { name: "Reset camera view" }).click();
   await page.getByRole("button", { name: "Back outside" }).click();
   await page.getByRole("button", { name: "Viewer settings" }).click();
-  await page.getByRole("button", { name: "high", exact: true }).click();
-  await expect(page.getByRole("button", { name: "high", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "High", exact: true }).click();
+  await expect(page.getByRole("button", { name: "High", exact: true })).toHaveAttribute("aria-pressed", "true");
   await page.getByRole("button", { name: "Close settings" }).click();
   await page.getByRole("button", { name: "Auto-rotate", exact: true }).click();
   await expect(page.getByRole("button", { name: "Pause rotation" })).toHaveAttribute("aria-pressed", "true");
