@@ -17,24 +17,17 @@ test("loads on demand, renders the actual villa and navigates rooms and cutaways
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Project examples.");
   await expect(page.getByRole("button", { name: "Explore in 3D" })).toBeVisible();
   expect(modelRequests).toBe(0);
-  await page.screenshot({ path: "test-results/desktop-poster.png", fullPage: true });
   await page.getByRole("button", { name: "Explore in 3D" }).click();
   await expect(page.getByText("LIVE 3D VIEW", { exact: false })).toBeVisible({ timeout: 60000 });
   await expect(page.getByTestId("villa-canvas")).toBeVisible();
   expect(modelRequests).toBe(1);
-  await page.screenshot({ path: "test-results/desktop-3d.png", fullPage: true });
   await page.getByRole("button", { name: "01 Living room", exact: true }).click();
   await expect(page).toHaveURL(/#living/);
   await expect(page.getByRole("button", { name: "01 Living room", exact: true })).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByRole("heading", { name: "Living room", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Back outside" })).toBeVisible();
-  // Allow the documented 950ms camera transition to settle before visual capture.
-  await page.waitForTimeout(1200);
-  await page.screenshot({ path: "test-results/living-room.png", fullPage: true });
   await page.getByRole("button", { name: "Ground floor", exact: true }).click();
   await expect(page.getByText("CUTAWAY VIEW", { exact: false })).toBeVisible();
-  await page.waitForTimeout(1200);
-  await page.screenshot({ path: "test-results/ground-floor.png", fullPage: true });
   await page.getByRole("button", { name: "First floor", exact: true }).click();
   await expect(page.getByRole("heading", { name: "First floor", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Explore Bedrooms on the floor plan" }).click();
@@ -60,19 +53,17 @@ test("mobile layout, keyboard navigation and room deep links", async ({ page }) 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.keyboard.press("Tab");
   await expect(page.getByRole("link", { name: "Skip to project" })).toBeFocused();
-  await page.screenshot({ path: "test-results/mobile.png", fullPage: true });
   await page.goto("/project-examples#kitchen");
   await expect(page.getByText("LIVE 3D VIEW", { exact: false })).toBeVisible({ timeout: 60000 });
   await expect(page.getByRole("heading", { name: "Kitchen", exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.screenshot({ path: "test-results/mobile-kitchen.png", fullPage: true });
 });
 
 test("model load failure preserves a usable retry path", async ({ page }) => {
   await page.route("**/models/villa-bellavista.glb", (route) => route.abort());
   await page.goto("/project-examples");
   await page.getByRole("button", { name: "Explore in 3D" }).click();
-  await expect(page.getByRole("alert")).toContainText("The model could not be loaded");
+  await expect(page.getByRole("alert", { name: "A little pause in the tour.", exact: true })).toContainText("The model could not be loaded");
   await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
   await page.unroute("**/models/villa-bellavista.glb");
   await page.getByRole("button", { name: "Try again" }).click();

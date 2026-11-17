@@ -123,7 +123,7 @@ export default function ProjectExplorer() {
                 <span>{t.opening}</span><div className="progress-track"><div style={{ width: `${Math.max(progress, 8)}%` }} /></div>
                 <small>{progress < 95 ? `${progress}% ${t.loaded}` : t.preparing}</small>
               </div>}
-              {error && <div className="error-overlay" role="alert"><Box size={26} /><h3>{t.errorTitle}</h3><p>{t[error]}</p><button className="dark-button" onClick={reload}><RotateCcw size={15} />{t.retry}</button></div>}
+              {error && <div className="error-overlay" role="alert" aria-labelledby="viewer-error-title"><Box size={26} /><h3 id="viewer-error-title">{t.errorTitle}</h3><p>{t[error]}</p><button className="dark-button" onClick={reload}><RotateCcw size={15} />{t.retry}</button></div>}
             </div>
             <div className="viewer-caption"><span className={ready ? "live-dot" : ""} />{ready ? (view.clip ? t.cutaway : t.live) : t.preview}<span className="caption-separator">/</span><Sun size={13} />{t.daylight}</div>
             {ready && active !== "exterior" && <button className="back-to-exterior" onClick={() => selectView("exterior")}><ArrowLeft size={14} />{t.backOutside}</button>}

@@ -13,6 +13,7 @@ export default defineConfig({
     baseURL: "http://127.0.0.1:3000",
     viewport: { width: 1440, height: 1000 },
     trace: "retain-on-failure",
+    screenshot: { mode: "only-on-failure", fullPage: false },
     launchOptions: {
       ...(process.env.PLAYWRIGHT_BROWSER_PATH ? { executablePath: process.env.PLAYWRIGHT_BROWSER_PATH } : existsSync(edge) ? { executablePath: edge } : {}),
       args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader"],

@@ -41,10 +41,10 @@ test("mobile Italian navigation fits and model errors are translated in both lan
   await page.goto("/project-examples");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.getByRole("button", { name: "Esplora in 3D" }).click();
-  await expect(page.getByRole("alert")).toContainText("Impossibile caricare il modello");
+  await expect(page.getByRole("alert", { name: "Una piccola pausa nel tour.", exact: true })).toContainText("Impossibile caricare il modello");
   await expect(page.getByRole("button", { name: "Riprova", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "English", exact: true }).click();
-  await expect(page.getByRole("alert")).toContainText("The model could not be loaded");
+  await expect(page.getByRole("alert", { name: "A little pause in the tour.", exact: true })).toContainText("The model could not be loaded");
   await expect(page.getByRole("button", { name: "Try again", exact: true })).toBeVisible();
 });
 
