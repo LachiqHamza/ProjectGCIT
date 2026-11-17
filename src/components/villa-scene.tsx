@@ -9,6 +9,7 @@ import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 import { VIEWS, type VillaView, type ViewId } from "@/lib/villa";
 
 export type SceneCommand = { id: number; type: "zoom-in" | "zoom-out" | "left" | "right" | "reset" };
+export type SceneError = "unsupported" | "contextLost" | "loadFailed";
 type Props = {
   view: VillaView;
   autoRotate: boolean;
@@ -16,7 +17,8 @@ type Props = {
   command: SceneCommand | null;
   onReady: () => void;
   onProgress: (value: number) => void;
-  onError: (message: string) => void;
+  onError: (code: SceneError) => void;
+  canvasLabel: string;
   onInteraction: () => void;
 };
 type Runtime = {
@@ -29,12 +31,17 @@ type Runtime = {
   zoom: (factor: number) => void;
 };
 
-export default function VillaScene({ view, autoRotate, quality, command, onReady, onProgress, onError, onInteraction }: Props) {
+export default function VillaScene({ view, autoRotate, quality, command, onReady, onProgress, onError, onInteraction, canvasLabel }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const runtime = useRef<Runtime | null>(null);
   const currentView = useRef(view);
   const rotation = useRef(false);
   const currentQuality = useRef(quality);
+  const currentLabel = useRef(canvasLabel);
+  useEffect(() => {
+    currentLabel.current = canvasLabel;
+    runtime.current?.renderer.domElement.setAttribute("aria-label", canvasLabel);
+  }, [canvasLabel]);
   useEffect(() => { currentView.current = view; runtime.current?.setView(view); }, [view]);
   useEffect(() => {
     rotation.current = autoRotate;
@@ -63,7 +70,7 @@ export default function VillaScene({ view, autoRotate, quality, command, onReady
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
     } catch {
-      onError("3D is not available on this device. You can still view the renders and room descriptions.");
+      onError("unsupported");
       return;
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.3));
@@ -74,7 +81,7 @@ export default function VillaScene({ view, autoRotate, quality, command, onReady
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     const canvas = renderer.domElement;
-    canvas.setAttribute("aria-label", "Interactive Villa Bellavista model. Use the room buttons or the controls below to explore.");
+    canvas.setAttribute("aria-label", currentLabel.current);
     canvas.setAttribute("role", "img");
     canvas.dataset.testid = "villa-canvas";
     el.appendChild(canvas);
@@ -185,7 +192,7 @@ export default function VillaScene({ view, autoRotate, quality, command, onReady
     const observer = new IntersectionObserver(([entry]) => { inViewport = entry.isIntersecting; if (inViewport) invalidate(); }, { threshold: .01 });
     observer.observe(el);
     document.addEventListener("visibilitychange", invalidate);
-    const onContextLost = (event: Event) => { event.preventDefault(); onError("The 3D graphics session was interrupted. Reload the viewer to continue."); };
+    const onContextLost = (event: Event) => { event.preventDefault(); onError("contextLost"); };
     canvas.addEventListener("webglcontextlost", onContextLost);
     const draco = new DRACOLoader();
     draco.setDecoderPath("/draco/");
@@ -207,7 +214,7 @@ export default function VillaScene({ view, autoRotate, quality, command, onReady
       setView(currentView.current);
       onProgress(100); onReady(); invalidate();
     }, (event) => { if (!disposed && event.total) onProgress(Math.min(95, Math.round(event.loaded / event.total * 95))); }, () => {
-      if (!disposed) onError("The model could not be loaded. Check your connection and try again.");
+      if (!disposed) onError("loadFailed");
     });
     invalidate();
     return () => {

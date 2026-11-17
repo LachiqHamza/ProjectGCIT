@@ -13,6 +13,16 @@ npm run dev
 
 Open http://127.0.0.1:3000/project-examples. The root URL redirects to this page.
 
+## Languages
+
+Italian is the default language. The IT / EN control in the header switches the entire interface, room descriptions, help, accessibility labels and error messages without restarting the loaded 3D viewer. A first-party `gcit-language` preference cookie remembers the visitor's choice for one year. The server uses that preference for the initial HTML language and metadata. No external translation service is used.
+
+Translations are maintained in `src/lib/i18n.ts`; camera coordinates and room URL fragments remain stable across languages. The existing `/project-examples` route is unchanged.
+
+## Branch workflow
+
+Use `feature/<description>` for features and `bug/<description>` for fixes. Create pull requests into `main`; do not commit feature work directly to `main`. The Italian language change is developed on `feature/add-italian`.
+
 ```sh
 npm run typecheck
 npm run lint
