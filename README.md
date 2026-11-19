@@ -60,6 +60,19 @@ The editable Blender master and original render PNGs remain in the parent GC pro
 
 Import this repository into Vercel as a Next.js project, or run `npm run build` and `npm start` on a Node host. Set the optional `NEXT_PUBLIC_SITE_URL` environment variable to the actual deployed origin for correct absolute social-preview URLs. Do not use the sample localhost value in production.
 
+## Backend starter
+
+The backend starter uses TypeScript through Next.js Route Handlers, PostgreSQL, and Drizzle ORM. Copy `.env.example` to `.env.local`, set `DATABASE_URL`, then use:
+
+```sh
+npm run db:generate
+npm run db:migrate
+```
+
+The initial schema includes `contact_messages`. The health endpoint is available at `/api/health`.
+
+See [`BACKEND_ARCHITECTURE.md`](./BACKEND_ARCHITECTURE.md) for the longer-term architecture recommendation.
+
 ## Browser tests
 
 ```sh
